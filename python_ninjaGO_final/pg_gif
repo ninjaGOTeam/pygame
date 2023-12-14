@@ -1,0 +1,61 @@
+import pygame
+from pygame.locals import *
+
+def load_gif_frames(file_path):
+    # GIF 파일에서 프레임을 추출하여 리스트에 저장하는 함수
+    gif = pygame.image.load(file_path)
+    frames = []
+    try:
+        i = 0
+        while True:
+            # GIF 파일에서 i번째 프레임을 추출하고 크기를 (32, 32)으로 조절하여 리스트에 추가
+            frame = pygame.transform.scale(gif.subsurface((i * 32, 0, 32, 32)), (32, 32))
+            frames.append(frame.copy())
+            i += 1
+    except pygame.error:
+        pass
+    return frames
+
+def main():
+    pygame.init()
+
+    # Pygame 창 초기화
+    screen = pygame.display.set_mode((32 * 2, 32))
+    pygame.display.set_caption('GIF Animation')
+
+    # monster1.gif와 monster2.gif 파일에 대한 경로
+    monster1_path = "monster1.gif"
+    monster2_path = "monster2.gif"
+
+    # monster1.gif와 monster2.gif에 대한 프레임 로드
+    frames_monster1 = load_gif_frames(monster1_path)
+    frames_monster2 = load_gif_frames(monster2_path)
+
+    # 각 몬스터에 대한 프레임 인덱스 초기화
+    frame_index_monster1 = 0
+    frame_index_monster2 = 0
+
+    # 이벤트 루프 설정
+    running = True
+    clock = pygame.time.Clock()
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+
+        # monster1.gif와 monster2.gif의 현재 프레임을 화면에 그림
+        screen.blit(frames_monster1[frame_index_monster1], (0, 0))
+        screen.blit(frames_monster2[frame_index_monster2], (32, 0))
+
+        # 각 몬스터의 다음 프레임 인덱스로 이동
+        frame_index_monster1 = (frame_index_monster1 + 1) % len(frames_monster1)
+        frame_index_monster2 = (frame_index_monster2 + 1) % len(frames_monster2)
+
+        pygame.display.flip()
+        clock.tick(10)  # 초당 10프레임으로 설정
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
